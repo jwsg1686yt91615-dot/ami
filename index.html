@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Ami's Money Log</title>
+  
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png">
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png">
+  <meta name="apple-mobile-web-app-title" content="Ami's Log">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #120524;
+      --card-bg: #1e0b3a;
+      --neon-purple: #bc13fe;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff00de;
+      --text-color: #f0e6ff;
+    }
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    body { margin:0; font-family: 'M PLUS Rounded 1c', sans-serif; background: var(--bg-color); color: var(--text-color); display:flex; flex-direction:column; align-items:center; min-height: 100vh; overflow-x: hidden; }
+    
+    #loginOverlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000; }
+    #passInput { width: 160px; padding: 15px; font-size: 24px; text-align: center; background: var(--card-bg); border: 2px solid var(--neon-cyan); color: #fff; border-radius: 50px; outline: none; box-shadow: 0 0 15px var(--neon-cyan); }
+
+    /* 保存演出 */
+    #overlay { position:fixed; inset:0; display:none; flex-direction: column; align-items:center; justify-content:center; background:rgba(18, 5, 36, 0.9); z-index:4000; }
+    .bubble {
+      position: relative; background: var(--card-bg); border: 2px solid var(--neon-cyan); border-radius: 15px;
+      padding: 15px 20px; margin-bottom: 25px; max-width: 80%; box-shadow: 0 0 15px var(--neon-cyan);
+      animation: bubble-in 0.4s ease-out;
+    }
+    .bubble::after {
+      content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+      border-width: 10px 10px 0; border-style: solid; border-color: var(--neon-cyan) transparent transparent;
+    }
+    .ikemen-circle { 
+      width: 250px; height: 250px; border-radius: 50%; 
+      background-image: url('https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png');
+      background-size: cover; background-repeat: no-repeat; background-position: center;
+      border: 4px solid var(--neon-cyan); box-shadow: 0 0 25px var(--neon-cyan);
+      animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .success-msg { font-size: 18px; color: #fff; text-align: center; line-height: 1.6; text-shadow: 0 0 5px var(--neon-cyan); }
+
+    /* 削除確認 (ENGLISH) */
+    #customConfirm { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:4500; }
+    .confirm-card { background: var(--card-bg); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 20px var(--neon-purple); animation: pop 0.3s ease-out; }
+    .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    .c-btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; flex: 1; letter-spacing: 1px; }
+    .btn-yes { background: var(--neon-pink); color: #fff; }
+    .btn-no { background: #444; color: #fff; }
+
+    header { text-align:center; padding:40px 20px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
+    h1 { font-size:28px; color: #fff; margin:0 0 20px 0; text-shadow: 0 0 10px var(--neon-purple); letter-spacing: 2px; }
+    .nav-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-bottom: 25px; }
+    .nav-btn-box { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 8px; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    #monthLabel { font-size:18px; color: #fff; min-width: 120px; text-align: center; font-weight: bold; }
+    #balance { font-size:52px; font-weight:bold; margin:10px 0 25px 0; color: #fff; text-shadow: 0 0 15px var(--neon-purple); }
+    .summary-box { display: flex; justify-content: center; gap: 15px; width: 92%; max-width: 450px; }
+    .summary-item { background: rgba(30, 11, 58, 0.5); padding: 15px; border-radius: 15px; flex: 1; text-align: center; border: 1px solid rgba(188, 19, 254, 0.3); }
+
+    main { width:92%; max-width:450px; display:flex; flex-direction:column; gap:15px; margin-top: 40px; }
+    input, select { width:100%; padding:16px; border-radius:14px; border: 1.5px solid var(--neon-purple); background: var(--card-bg); color: #fff; font-size: 16px; box-sizing: border-box; outline: none; }
+    #submitBtn { padding:18px; background: var(--card-bg); color: #fff; border: 2.5px solid var(--neon-purple); border-radius: 18px; font-weight: bold; font-size: 22px; cursor: pointer; margin-top: 10px; box-shadow: 0 0 15px var(--neon-purple); }
+
+    #historyList { width:92%; max-width:450px; margin-top:30px; padding-bottom:50px; }
+    .history-item { background: rgba(30, 11, 58, 0.8); margin-bottom: 12px; padding: 18px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--neon-purple); }
+    .del-btn { color: var(--neon-pink); font-size: 18px; background: none; border: none; cursor: pointer; }
+
+    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes bubble-in { from { transform: translateY(20px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div style="color:var(--neon-cyan); margin-bottom:20px; font-weight:bold; letter-spacing:2px;">AMI'S LOG LOCK</div>
+  <input type="password" id="passInput" inputmode="numeric" oninput="checkPass()" placeholder="PIN">
+</div>
+
+<div id="overlay">
+  <div class="bubble"><div class="success-msg" id="ikemenMsg"></div></div>
+  <div class="ikemen-circle"></div>
+</div>
+
+<div id="customConfirm">
+  <div class="confirm-card">
+    <div class="confirm-msg" style="font-weight:bold; letter-spacing:1px;">Are you sure you want to<br>delete this log?</div>
+    <div class="confirm-btns">
+      <button class="c-btn btn-no" onclick="closeConfirm()">CANCEL</button>
+      <button class="c-btn btn-yes" id="confirmDeleteBtn">DELETE</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1>Ami's Money Log</h1>
+  <div class="nav-row">
+    <div class="nav-btn-box" onclick="changeMonth(-1)"><span style="color:var(--neon-purple)">◀</span></div>
+    <div id="monthLabel">Loading...</div>
+    <div class="nav-btn-box" onclick="changeMonth(1)"><span style="color:var(--neon-purple)">▶</span></div>
+    <button style="background:none; border:1.5px solid var(--neon-cyan); color:var(--neon-cyan); border-radius:12px; font-size:10px; padding:4px 8px; margin-left:10px;" onclick="refreshAll()">UPDATE</button>
+  </div>
+  <div id="balance">¥0</div>
+  <div class="summary-box">
+    <div class="summary-item">INCOME<br><b id="totalIn" style="font-size:18px;">¥0</b></div>
+    <div class="summary-item">EXPENSE<br><b id="totalEx" style="font-size:18px;">¥0</b></div>
+  </div>
+</header>
+
+<main>
+  <select id="type" onchange="buildCategory()">
+    <option value="支出">支出 (EXPENSE)</option>
+    <option value="収入">収入 (INCOME)</option>
+  </select>
+  <input id="amount" type="number" inputmode="numeric" placeholder="ENTER AMOUNT">
+  <select id="category" onchange="toggleOther()"></select>
+  <input id="other" placeholder="DETAILS" style="display:none">
+  <button id="submitBtn" onclick="submit()">SAVE</button>
+</main>
+
+<div id="historyList"></div>
+
+<script>
+const MY_PASS = '1234'; 
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby1Bm-OfVpdsIRzKTn-5o9HUoU5j-o5-rmmZBQunNGDAxe_psGxkIG2TY6aYYFr-fL6/exec'; 
+
+let allMessages = []; 
+var offset = 0;
+let pendingDelete = null;
+
+function checkPass() {
+  if (document.getElementById('passInput').value === MY_PASS) {
+    document.getElementById('loginOverlay').style.display = 'none'; 
+    refreshAll();
+    loadMessagesFromServer();
+  }
+}
+
+function loadMessagesFromServer() {
+  fetch(GAS_URL + "?action=getMessages").then(res => res.json()).then(data => { allMessages = data; });
+}
+
+function getIkemenMessage(amount) {
+  const hour = new Date().getHours();
+  let type = '通常';
+  if (amount >= 10000) type = '高額';
+  else if (hour >= 5 && hour < 10) type = '朝';
+  else if (hour >= 20 || hour < 5) type = '夜';
+  let filtered = allMessages.filter(m => m.type === type);
+  if (filtered.length === 0) filtered = allMessages.filter(m => m.type === '通常');
+  return filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)].text : "Good job, Ami.";
+}
+
+function submit(){
+  const amtInput = document.getElementById('amount');
+  const amt = amtInput.value;
+  if(!amt) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerText = "SAVING...";
+
+  fetch(GAS_URL + "?action=add&amount=" + amt + 
+        "&type=" + encodeURIComponent(document.getElementById('type').value) +
+        "&category=" + encodeURIComponent(document.getElementById('category').value) +
+        "&other=" + encodeURIComponent(document.getElementById('other').value))
+    .then(res => res.json())
+    .then(res => {
+      document.getElementById('ikemenMsg').innerText = getIkemenMessage(Number(amt));
+      document.getElementById('overlay').style.display = 'flex';
+      amtInput.value = '';
+      setTimeout(() => { document.getElementById('overlay').style.display = 'none'; refreshAll(); }, 3000);
+    })
+    .finally(() => { 
+      btn.disabled = false; 
+      btn.innerText = "SAVE";
+    });
+}
+
+function refreshAll() { loadSummary(); loadHistory(); }
+
+function buildCategory(){
+  const cat = document.getElementById('category');
+  const list = (document.getElementById('type').value === '支出' ? ['食費','日用品','美容','交際費','固定費','趣味','その他'] : ['給料','その他']);
+  cat.innerHTML = list.map(item => `<option value="${item}">${item}</option>`).join('');
+  toggleOther();
+}
+
+function toggleOther(){ 
+  const otherInput = document.getElementById('other');
+  if(otherInput) otherInput.style.display = (document.getElementById('category').value === 'その他' ? 'block' : 'none'); 
+}
+
+function loadSummary(){ 
+  fetch(GAS_URL + "?action=getSummary&offset=" + offset)
+    .then(res => res.json())
+    .then(d => { 
+      document.getElementById('monthLabel').innerText = d.label; 
+      document.getElementById('balance').innerText = '¥' + d.balance.toLocaleString(); 
+      document.getElementById('totalIn').innerText = '¥' + d.totalIn.toLocaleString(); 
+      document.getElementById('totalEx').innerText = '¥' + d.totalEx.toLocaleString(); 
+    }); 
+}
+
+function loadHistory() { 
+  fetch(GAS_URL + "?action=getHistory")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('historyList').innerHTML = data.map(item => `
+        <div class="history-item">
+          <div><small style="opacity:0.6;">${item.dateDisplay}</small><br><b>${item.category === 'その他' ? item.other : item.category}</b></div>
+          <div style="display:flex; align-items:center;">
+            <div style="color:var(--neon-pink); font-weight:bold; font-size:18px;">${item.type==='支出'?'-':'+'}¥${item.amount.toLocaleString()}</div>
+            <button class="del-btn" onclick="openConfirm('${item.dateFull}',${item.amount},'${item.category}')">×</button>
+          </div>
+        </div>`).join('');
+    }); 
+}
+
+function openConfirm(dateFull, amount, category) {
+  pendingDelete = { dateFull, amount, category };
+  document.getElementById('customConfirm').style.display = 'flex';
+}
+
+function closeConfirm() {
+  document.getElementById('customConfirm').style.display = 'none';
+  pendingDelete = null;
+}
+
+document.getElementById('confirmDeleteBtn').onclick = function() {
+  if (pendingDelete) {
+    const { dateFull, amount, category } = pendingDelete;
+    fetch(GAS_URL + "?action=delete&dateFull=" + dateFull + "&amount=" + amount + "&category=" + category)
+      .then(() => { closeConfirm(); refreshAll(); });
+  }
+};
+
+function changeMonth(v){ offset += v; loadSummary(); }
+window.onload = buildCategory;
+</script>
+</body>
+</html>
