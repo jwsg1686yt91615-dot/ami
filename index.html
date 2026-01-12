@@ -29,8 +29,9 @@
     #loginOverlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000; }
     #passInput { width: 160px; padding: 15px; font-size: 24px; text-align: center; background: var(--card-bg); border: 2px solid var(--neon-cyan); color: #fff; border-radius: 50px; outline: none; box-shadow: 0 0 15px var(--neon-cyan); }
 
-    /* 保存演出 */
+    /* --- 保存演出 (吹き出し + 丸アイコン) --- */
     #overlay { position:fixed; inset:0; display:none; flex-direction: column; align-items:center; justify-content:center; background:rgba(18, 5, 36, 0.9); z-index:4000; }
+    
     .bubble {
       position: relative; background: var(--card-bg); border: 2px solid var(--neon-cyan); border-radius: 15px;
       padding: 15px 20px; margin-bottom: 25px; max-width: 80%; box-shadow: 0 0 15px var(--neon-cyan);
@@ -41,15 +42,15 @@
       border-width: 10px 10px 0; border-style: solid; border-color: var(--neon-cyan) transparent transparent;
     }
     .ikemen-circle { 
-      width: 250px; height: 250px; border-radius: 50%; 
-      background-image: url('https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png');
+      width: 220px; height: 220px; border-radius: 50%; 
+      background-image: url('https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_9fno2h9fno2h9fno.png');
       background-size: cover; background-repeat: no-repeat; background-position: center;
-      border: 4px solid var(--neon-cyan); box-shadow: 0 0 25px var(--neon-cyan);
+      border: 3px solid var(--neon-cyan); box-shadow: 0 0 20px var(--neon-cyan);
       animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .success-msg { font-size: 18px; color: #fff; text-align: center; line-height: 1.6; text-shadow: 0 0 5px var(--neon-cyan); }
 
-    /* 削除確認 (ENGLISH) */
+    /* --- 削除確認 (ENGLISH) --- */
     #customConfirm { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:4500; }
     .confirm-card { background: var(--card-bg); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 20px var(--neon-purple); animation: pop 0.3s ease-out; }
     .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
@@ -57,14 +58,20 @@
     .btn-yes { background: var(--neon-pink); color: #fff; }
     .btn-no { background: #444; color: #fff; }
 
+    /* --- ヘッダー・色分け設定 --- */
     header { text-align:center; padding:40px 20px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
     h1 { font-size:28px; color: #fff; margin:0 0 20px 0; text-shadow: 0 0 10px var(--neon-purple); letter-spacing: 2px; }
+    #balance { font-size:52px; font-weight:bold; margin:10px 0 25px 0; color: #fff; text-shadow: 0 0 15px var(--neon-purple); }
+    
+    .summary-box { display: flex; justify-content: center; gap: 15px; width: 92%; max-width: 450px; }
+    .summary-item { background: rgba(30, 11, 58, 0.5); padding: 15px; border-radius: 15px; flex: 1; text-align: center; border: 1px solid rgba(188, 19, 254, 0.3); color: rgba(240, 230, 255, 0.8); font-size: 11px; letter-spacing: 1px; }
+    
+    #totalIn { color: var(--neon-cyan); font-size: 18px; text-shadow: 0 0 8px var(--neon-cyan); }
+    #totalEx { color: var(--neon-pink); font-size: 18px; text-shadow: 0 0 8px var(--neon-pink); }
+
     .nav-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-bottom: 25px; }
     .nav-btn-box { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 8px; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     #monthLabel { font-size:18px; color: #fff; min-width: 120px; text-align: center; font-weight: bold; }
-    #balance { font-size:52px; font-weight:bold; margin:10px 0 25px 0; color: #fff; text-shadow: 0 0 15px var(--neon-purple); }
-    .summary-box { display: flex; justify-content: center; gap: 15px; width: 92%; max-width: 450px; }
-    .summary-item { background: rgba(30, 11, 58, 0.5); padding: 15px; border-radius: 15px; flex: 1; text-align: center; border: 1px solid rgba(188, 19, 254, 0.3); }
 
     main { width:92%; max-width:450px; display:flex; flex-direction:column; gap:15px; margin-top: 40px; }
     input, select { width:100%; padding:16px; border-radius:14px; border: 1.5px solid var(--neon-purple); background: var(--card-bg); color: #fff; font-size: 16px; box-sizing: border-box; outline: none; }
@@ -110,8 +117,8 @@
   </div>
   <div id="balance">¥0</div>
   <div class="summary-box">
-    <div class="summary-item">INCOME<br><b id="totalIn" style="font-size:18px;">¥0</b></div>
-    <div class="summary-item">EXPENSE<br><b id="totalEx" style="font-size:18px;">¥0</b></div>
+    <div class="summary-item">INCOME<br><b id="totalIn">¥0</b></div>
+    <div class="summary-item">EXPENSE<br><b id="totalEx">¥0</b></div>
   </div>
 </header>
 
@@ -129,6 +136,7 @@
 <div id="historyList"></div>
 
 <script>
+// --- 以下、GASのURLやロジックは以前と同じ ---
 const MY_PASS = '1234'; 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby1Bm-OfVpdsIRzKTn-5o9HUoU5j-o5-rmmZBQunNGDAxe_psGxkIG2TY6aYYFr-fL6/exec'; 
 
@@ -156,7 +164,7 @@ function getIkemenMessage(amount) {
   else if (hour >= 20 || hour < 5) type = '夜';
   let filtered = allMessages.filter(m => m.type === type);
   if (filtered.length === 0) filtered = allMessages.filter(m => m.type === '通常');
-  return filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)].text : "Good job, Ami.";
+  return filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)].text : "お疲れ様。";
 }
 
 function submit(){
