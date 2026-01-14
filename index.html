@@ -32,7 +32,7 @@
     #loginOverlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000; }
     #passInput { width: 160px; padding: 15px; font-size: 24px; text-align: center; background: var(--card-bg); border: 2px solid var(--neon-cyan); color: #fff; border-radius: 50px; outline: none; box-shadow: 0 0 15px var(--neon-cyan); }
 
-    /* 保存演出 */
+    /* 保存・更新演出 */
     #overlay { position:fixed; inset:0; display:none; flex-direction: column; align-items:center; justify-content:center; background:rgba(18, 5, 36, 0.9); z-index:4000; }
     .bubble {
       position: relative; background: var(--card-bg); border: 2px solid var(--neon-cyan); border-radius: 15px;
@@ -52,13 +52,11 @@
     }
     .success-msg { font-size: 18px; color: #fff; text-align: center; line-height: 1.6; text-shadow: 0 0 5px var(--neon-cyan); }
 
-    /* 削除確認 */
-    #customConfirm { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:4500; }
-    .confirm-card { background: var(--card-bg); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 20px var(--neon-purple); animation: pop 0.3s ease-out; }
-    .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-    .c-btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; flex: 1; letter-spacing: 1px; }
-    .btn-yes { background: var(--neon-pink); color: #fff; }
-    .btn-no { background: #444; color: #fff; }
+    /* Loading ぐるぐる */
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid rgba(0, 243, 255, 0.3); border-top: 4px solid var(--neon-cyan);
+      border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px;
+    }
 
     header { text-align:center; padding:40px 20px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
     h1 { font-size:28px; color: #fff; margin:0 0 20px 0; text-shadow: 0 0 10px var(--neon-purple); letter-spacing: 2px; }
@@ -73,6 +71,12 @@
     .nav-btn-box { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 8px; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     #monthLabel { font-size:18px; color: #fff; min-width: 120px; text-align: center; font-weight: bold; }
 
+    /* 削除確認 */
+    #customConfirm { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:4500; }
+    .confirm-card { background: var(--card-bg); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 20px var(--neon-purple); }
+    .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    .c-btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; flex: 1; color:#fff; }
+
     main { width:92%; max-width:450px; display:flex; flex-direction:column; gap:15px; margin-top: 40px; }
     input, select { width:100%; padding:16px; border-radius:14px; border: 1.5px solid var(--neon-purple); background: var(--card-bg); color: #fff; font-size: 16px; box-sizing: border-box; outline: none; }
     #submitBtn { padding:18px; background: var(--card-bg); color: #fff; border: 2.5px solid var(--neon-purple); border-radius: 18px; font-weight: bold; font-size: 22px; cursor: pointer; margin-top: 10px; box-shadow: 0 0 15px var(--neon-purple); }
@@ -83,6 +87,7 @@
 
     @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes bubble-in { from { transform: translateY(20px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -93,16 +98,22 @@
 </div>
 
 <div id="overlay">
-  <div class="bubble"><div class="success-msg" id="ikemenMsg"></div></div>
-  <div class="ikemen-circle"></div>
+  <div id="ikemenArea" style="display:none; flex-direction:column; align-items:center;">
+    <div class="bubble"><div class="success-msg" id="ikemenMsg"></div></div>
+    <div class="ikemen-circle"></div>
+  </div>
+  <div id="loadingArea" style="display:none; flex-direction:column; align-items:center;">
+    <div style="color:var(--neon-cyan); font-weight:bold; letter-spacing:2px;">UPDATING...</div>
+    <div class="spinner"></div>
+  </div>
 </div>
 
 <div id="customConfirm">
   <div class="confirm-card">
-    <div class="confirm-msg" style="font-weight:bold; letter-spacing:1px;">Are you sure you want to<br>delete this log?</div>
+    <div style="font-weight:bold;">Are you sure?</div>
     <div class="confirm-btns">
-      <button class="c-btn btn-no" onclick="closeConfirm()">CANCEL</button>
-      <button class="c-btn btn-yes" id="confirmDeleteBtn">DELETE</button>
+      <button class="c-btn" style="background:#444;" onclick="closeConfirm()">CANCEL</button>
+      <button class="c-btn" style="background:var(--neon-pink);" id="confirmDeleteBtn">DELETE</button>
     </div>
   </div>
 </div>
@@ -113,7 +124,7 @@
     <div class="nav-btn-box" onclick="changeMonth(-1)"><span style="color:var(--neon-purple)">◀</span></div>
     <div id="monthLabel">Loading...</div>
     <div class="nav-btn-box" onclick="changeMonth(1)"><span style="color:var(--neon-purple)">▶</span></div>
-    <button style="background:none; border:1.5px solid var(--neon-cyan); color:var(--neon-cyan); border-radius:12px; font-size:10px; padding:4px 8px; margin-left:10px;" onclick="refreshAll()">UPDATE</button>
+    <button id="updateBtn" style="background:none; border:1.5px solid var(--neon-cyan); color:var(--neon-cyan); border-radius:12px; font-size:10px; padding:4px 8px; margin-left:10px;" onclick="refreshWithLoading()">UPDATE</button>
   </div>
   <div id="balance">¥0</div>
   <div class="summary-box">
@@ -155,6 +166,27 @@ function loadMessagesFromServer() {
   fetch(GAS_URL + "?action=getMessages").then(res => res.json()).then(data => { allMessages = data; });
 }
 
+// Loading付き更新
+async function refreshWithLoading() {
+  const overlay = document.getElementById('overlay');
+  const loadingArea = document.getElementById('loadingArea');
+  const ikemenArea = document.getElementById('ikemenArea');
+  
+  ikemenArea.style.display = 'none';
+  loadingArea.style.display = 'flex';
+  overlay.style.display = 'flex';
+
+  await refreshAll();
+  
+  setTimeout(() => {
+    overlay.style.display = 'none';
+  }, 800);
+}
+
+async function refreshAll() {
+  await Promise.all([loadSummary(), loadHistory()]);
+}
+
 function getIkemenMessage(amount, type) {
   const hour = new Date().getHours();
   let targetType = '通常';
@@ -173,48 +205,60 @@ function submit(){
   const amt = amtInput.value;
   const currentType = typeInput.value;
   if(!amt) return;
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerText = "SAVING...";
+
   fetch(GAS_URL + "?action=add&amount=" + amt + "&type=" + encodeURIComponent(currentType) + "&category=" + encodeURIComponent(document.getElementById('category').value) + "&other=" + encodeURIComponent(document.getElementById('other').value))
     .then(res => res.json())
     .then(res => {
+      const overlay = document.getElementById('overlay');
+      const ikemenArea = document.getElementById('ikemenArea');
+      const loadingArea = document.getElementById('loadingArea');
+      
+      loadingArea.style.display = 'none';
+      ikemenArea.style.display = 'flex';
       document.getElementById('ikemenMsg').innerText = getIkemenMessage(Number(amt), currentType);
-      document.getElementById('overlay').style.display = 'flex';
+      overlay.style.display = 'flex';
+      
       amtInput.value = '';
-      setTimeout(() => { document.getElementById('overlay').style.display = 'none'; refreshAll(); }, 3000);
+      setTimeout(() => { overlay.style.display = 'none'; refreshAll(); }, 3000);
     })
     .finally(() => { btn.disabled = false; btn.innerText = "SAVE"; });
 }
 
-function refreshAll() { loadSummary(); loadHistory(); }
 function buildCategory(){
   const cat = document.getElementById('category');
   const list = (document.getElementById('type').value === '支出' ? ['食費','日用品','美容','交際費','固定費','趣味','その他'] : ['給料','その他']);
   cat.innerHTML = list.map(item => `<option value="${item}">${item}</option>`).join('');
   toggleOther();
 }
+
 function toggleOther(){ document.getElementById('other').style.display = (document.getElementById('category').value === 'その他' ? 'block' : 'none'); }
-function loadSummary(){ 
-  fetch(GAS_URL + "?action=getSummary&offset=" + offset).then(res => res.json()).then(d => { 
-    document.getElementById('monthLabel').innerText = d.label; 
-    document.getElementById('balance').innerText = '¥' + d.balance.toLocaleString(); 
-    document.getElementById('totalIn').innerText = '¥' + d.totalIn.toLocaleString(); 
-    document.getElementById('totalEx').innerText = '¥' + d.totalEx.toLocaleString(); 
-  }); 
+
+async function loadSummary(){ 
+  const res = await fetch(GAS_URL + "?action=getSummary&offset=" + offset);
+  const d = await res.json();
+  document.getElementById('monthLabel').innerText = d.label; 
+  document.getElementById('balance').innerText = '¥' + d.balance.toLocaleString(); 
+  document.getElementById('totalIn').innerText = '¥' + d.totalIn.toLocaleString(); 
+  document.getElementById('totalEx').innerText = '¥' + d.totalEx.toLocaleString(); 
 }
-function loadHistory() { 
-  fetch(GAS_URL + "?action=getHistory").then(res => res.json()).then(data => {
-    document.getElementById('historyList').innerHTML = data.map(item => `
-      <div class="history-item">
-        <div><small style="opacity:0.6;">${item.dateDisplay}</small><br><b>${item.category === 'その他' ? item.other : item.category}</b></div>
-        <div style="display:flex; align-items:center;">
-          <div style="color:${item.type==='支出'?'var(--neon-pink)':'var(--neon-cyan)'}; font-weight:bold; font-size:18px;">${item.type==='支出'?'-':'+'}¥${item.amount.toLocaleString()}</div>
-          <button class="del-btn" onclick="openConfirm('${item.dateFull}',${item.amount},'${item.category}')">×</button>
-        </div>
-      </div>`).join('');
-  }); 
+
+async function loadHistory() { 
+  const res = await fetch(GAS_URL + "?action=getHistory");
+  const data = await res.json();
+  document.getElementById('historyList').innerHTML = data.map(item => `
+    <div class="history-item">
+      <div><small style="opacity:0.6;">${item.dateDisplay}</small><br><b>${item.category === 'その他' ? item.other : item.category}</b></div>
+      <div style="display:flex; align-items:center;">
+        <div style="color:${item.type==='支出'?'var(--neon-pink)':'var(--neon-cyan)'}; font-weight:bold; font-size:18px;">${item.type==='支出'?'-':'+'}¥${item.amount.toLocaleString()}</div>
+        <button class="del-btn" onclick="openConfirm('${item.dateFull}',${item.amount},'${item.category}')">×</button>
+      </div>
+    </div>`).join('');
 }
+
 function openConfirm(dateFull, amount, category) { pendingDelete = { dateFull, amount, category }; document.getElementById('customConfirm').style.display = 'flex'; }
 function closeConfirm() { document.getElementById('customConfirm').style.display = 'none'; pendingDelete = null; }
 document.getElementById('confirmDeleteBtn').onclick = function() {
