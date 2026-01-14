@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Ami's Money Log</title>
   
+  <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png">
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png">
+  
   <meta name="apple-mobile-web-app-title" content="Ami's Log">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#120524">
 
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -29,9 +32,8 @@
     #loginOverlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000; }
     #passInput { width: 160px; padding: 15px; font-size: 24px; text-align: center; background: var(--card-bg); border: 2px solid var(--neon-cyan); color: #fff; border-radius: 50px; outline: none; box-shadow: 0 0 15px var(--neon-cyan); }
 
-    /* --- 保存演出 (吹き出し + 丸アイコン) --- */
+    /* 保存演出 */
     #overlay { position:fixed; inset:0; display:none; flex-direction: column; align-items:center; justify-content:center; background:rgba(18, 5, 36, 0.9); z-index:4000; }
-    
     .bubble {
       position: relative; background: var(--card-bg); border: 2px solid var(--neon-cyan); border-radius: 15px;
       padding: 15px 20px; margin-bottom: 25px; max-width: 80%; box-shadow: 0 0 15px var(--neon-cyan);
@@ -50,7 +52,7 @@
     }
     .success-msg { font-size: 18px; color: #fff; text-align: center; line-height: 1.6; text-shadow: 0 0 5px var(--neon-cyan); }
 
-    /* --- 削除確認 (ENGLISH) --- */
+    /* 削除確認 */
     #customConfirm { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:4500; }
     .confirm-card { background: var(--card-bg); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 20px var(--neon-purple); animation: pop 0.3s ease-out; }
     .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
@@ -58,14 +60,12 @@
     .btn-yes { background: var(--neon-pink); color: #fff; }
     .btn-no { background: #444; color: #fff; }
 
-    /* --- ヘッダー・色分け設定 --- */
     header { text-align:center; padding:40px 20px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
     h1 { font-size:28px; color: #fff; margin:0 0 20px 0; text-shadow: 0 0 10px var(--neon-purple); letter-spacing: 2px; }
     #balance { font-size:52px; font-weight:bold; margin:10px 0 25px 0; color: #fff; text-shadow: 0 0 15px var(--neon-purple); }
     
     .summary-box { display: flex; justify-content: center; gap: 15px; width: 92%; max-width: 450px; }
-    .summary-item { background: rgba(30, 11, 58, 0.5); padding: 15px; border-radius: 15px; flex: 1; text-align: center; border: 1px solid rgba(188, 19, 254, 0.3); color: rgba(240, 230, 255, 0.8); font-size: 11px; letter-spacing: 1px; }
-    
+    .summary-item { background: rgba(30, 11, 58, 0.5); padding: 15px; border-radius: 15px; flex: 1; text-align: center; border: 1px solid rgba(188, 19, 254, 0.3); color: rgba(240, 230, 255, 0.8); font-size: 11px; }
     #totalIn { color: var(--neon-cyan); font-size: 18px; text-shadow: 0 0 8px var(--neon-cyan); }
     #totalEx { color: var(--neon-pink); font-size: 18px; text-shadow: 0 0 8px var(--neon-pink); }
 
@@ -136,7 +136,6 @@
 <div id="historyList"></div>
 
 <script>
-// --- 以下、GASのURLやロジックは以前と同じ ---
 const MY_PASS = '1234'; 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby1Bm-OfVpdsIRzKTn-5o9HUoU5j-o5-rmmZBQunNGDAxe_psGxkIG2TY6aYYFr-fL6/exec'; 
 
@@ -156,100 +155,74 @@ function loadMessagesFromServer() {
   fetch(GAS_URL + "?action=getMessages").then(res => res.json()).then(data => { allMessages = data; });
 }
 
-function getIkemenMessage(amount) {
+function getIkemenMessage(amount, type) {
   const hour = new Date().getHours();
-  let type = '通常';
-  if (amount >= 10000) type = '高額';
-  else if (hour >= 5 && hour < 10) type = '朝';
-  else if (hour >= 20 || hour < 5) type = '夜';
-  let filtered = allMessages.filter(m => m.type === type);
+  let targetType = '通常';
+  if (type === '収入') targetType = '収入';
+  else if (amount >= 10000) targetType = '高額';
+  else if (hour >= 5 && hour < 10) targetType = '朝';
+  else if (hour >= 20 || hour < 5) targetType = '夜';
+  let filtered = allMessages.filter(m => m.type === targetType);
   if (filtered.length === 0) filtered = allMessages.filter(m => m.type === '通常');
   return filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)].text : "お疲れ様。";
 }
 
 function submit(){
   const amtInput = document.getElementById('amount');
+  const typeInput = document.getElementById('type');
   const amt = amtInput.value;
+  const currentType = typeInput.value;
   if(!amt) return;
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerText = "SAVING...";
-
-  fetch(GAS_URL + "?action=add&amount=" + amt + 
-        "&type=" + encodeURIComponent(document.getElementById('type').value) +
-        "&category=" + encodeURIComponent(document.getElementById('category').value) +
-        "&other=" + encodeURIComponent(document.getElementById('other').value))
+  fetch(GAS_URL + "?action=add&amount=" + amt + "&type=" + encodeURIComponent(currentType) + "&category=" + encodeURIComponent(document.getElementById('category').value) + "&other=" + encodeURIComponent(document.getElementById('other').value))
     .then(res => res.json())
     .then(res => {
-      document.getElementById('ikemenMsg').innerText = getIkemenMessage(Number(amt));
+      document.getElementById('ikemenMsg').innerText = getIkemenMessage(Number(amt), currentType);
       document.getElementById('overlay').style.display = 'flex';
       amtInput.value = '';
       setTimeout(() => { document.getElementById('overlay').style.display = 'none'; refreshAll(); }, 3000);
     })
-    .finally(() => { 
-      btn.disabled = false; 
-      btn.innerText = "SAVE";
-    });
+    .finally(() => { btn.disabled = false; btn.innerText = "SAVE"; });
 }
 
 function refreshAll() { loadSummary(); loadHistory(); }
-
 function buildCategory(){
   const cat = document.getElementById('category');
   const list = (document.getElementById('type').value === '支出' ? ['食費','日用品','美容','交際費','固定費','趣味','その他'] : ['給料','その他']);
   cat.innerHTML = list.map(item => `<option value="${item}">${item}</option>`).join('');
   toggleOther();
 }
-
-function toggleOther(){ 
-  const otherInput = document.getElementById('other');
-  if(otherInput) otherInput.style.display = (document.getElementById('category').value === 'その他' ? 'block' : 'none'); 
-}
-
+function toggleOther(){ document.getElementById('other').style.display = (document.getElementById('category').value === 'その他' ? 'block' : 'none'); }
 function loadSummary(){ 
-  fetch(GAS_URL + "?action=getSummary&offset=" + offset)
-    .then(res => res.json())
-    .then(d => { 
-      document.getElementById('monthLabel').innerText = d.label; 
-      document.getElementById('balance').innerText = '¥' + d.balance.toLocaleString(); 
-      document.getElementById('totalIn').innerText = '¥' + d.totalIn.toLocaleString(); 
-      document.getElementById('totalEx').innerText = '¥' + d.totalEx.toLocaleString(); 
-    }); 
+  fetch(GAS_URL + "?action=getSummary&offset=" + offset).then(res => res.json()).then(d => { 
+    document.getElementById('monthLabel').innerText = d.label; 
+    document.getElementById('balance').innerText = '¥' + d.balance.toLocaleString(); 
+    document.getElementById('totalIn').innerText = '¥' + d.totalIn.toLocaleString(); 
+    document.getElementById('totalEx').innerText = '¥' + d.totalEx.toLocaleString(); 
+  }); 
 }
-
 function loadHistory() { 
-  fetch(GAS_URL + "?action=getHistory")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('historyList').innerHTML = data.map(item => `
-        <div class="history-item">
-          <div><small style="opacity:0.6;">${item.dateDisplay}</small><br><b>${item.category === 'その他' ? item.other : item.category}</b></div>
-          <div style="display:flex; align-items:center;">
-            <div style="color:var(--neon-pink); font-weight:bold; font-size:18px;">${item.type==='支出'?'-':'+'}¥${item.amount.toLocaleString()}</div>
-            <button class="del-btn" onclick="openConfirm('${item.dateFull}',${item.amount},'${item.category}')">×</button>
-          </div>
-        </div>`).join('');
-    }); 
+  fetch(GAS_URL + "?action=getHistory").then(res => res.json()).then(data => {
+    document.getElementById('historyList').innerHTML = data.map(item => `
+      <div class="history-item">
+        <div><small style="opacity:0.6;">${item.dateDisplay}</small><br><b>${item.category === 'その他' ? item.other : item.category}</b></div>
+        <div style="display:flex; align-items:center;">
+          <div style="color:${item.type==='支出'?'var(--neon-pink)':'var(--neon-cyan)'}; font-weight:bold; font-size:18px;">${item.type==='支出'?'-':'+'}¥${item.amount.toLocaleString()}</div>
+          <button class="del-btn" onclick="openConfirm('${item.dateFull}',${item.amount},'${item.category}')">×</button>
+        </div>
+      </div>`).join('');
+  }); 
 }
-
-function openConfirm(dateFull, amount, category) {
-  pendingDelete = { dateFull, amount, category };
-  document.getElementById('customConfirm').style.display = 'flex';
-}
-
-function closeConfirm() {
-  document.getElementById('customConfirm').style.display = 'none';
-  pendingDelete = null;
-}
-
+function openConfirm(dateFull, amount, category) { pendingDelete = { dateFull, amount, category }; document.getElementById('customConfirm').style.display = 'flex'; }
+function closeConfirm() { document.getElementById('customConfirm').style.display = 'none'; pendingDelete = null; }
 document.getElementById('confirmDeleteBtn').onclick = function() {
   if (pendingDelete) {
     const { dateFull, amount, category } = pendingDelete;
-    fetch(GAS_URL + "?action=delete&dateFull=" + dateFull + "&amount=" + amount + "&category=" + category)
-      .then(() => { closeConfirm(); refreshAll(); });
+    fetch(GAS_URL + "?action=delete&dateFull=" + dateFull + "&amount=" + amount + "&category=" + category).then(() => { closeConfirm(); refreshAll(); });
   }
 };
-
 function changeMonth(v){ offset += v; loadSummary(); }
 window.onload = buildCategory;
 </script>
