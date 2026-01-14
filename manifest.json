@@ -1,0 +1,16 @@
+{
+  "name": "Ami's Money Log",
+  "short_name": "Ami's Log",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#120524",
+  "theme_color": "#120524",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/jwsg1686yt91615-dot/ami/main/Gemini_Generated_Image_62q3zc62q3zc62q3.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
